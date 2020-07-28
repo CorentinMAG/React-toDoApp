@@ -48,9 +48,12 @@ export default class TodoStore {
 	}
 
 	inform () {
+		//on appelle chaque callback
 		this.callbacks.forEach(cb => cb(this))
 	}
 
+	//le store informe le component qu'il y a eu des changements
+	//enregistre le callback dans une liste
 	onChange (cb: ChangeCallback) {
 		this.callbacks.push(cb)
 

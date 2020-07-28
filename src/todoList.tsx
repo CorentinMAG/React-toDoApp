@@ -3,7 +3,7 @@ import {FormEvent,KeyboardEvent,MouseEvent} from 'react'
 import TodoStore from './TodoStore'
 import {Todo} from './interfaces'
 import TodoItem from './TodoItem'
-import * as cx from 'classnames'
+import cx from 'classnames'
 
 
 type FilterOptions = 'all' | 'active' | 'completed' 
@@ -41,10 +41,13 @@ export default class TodoList extends React.PureComponent<TodoListProps,TodoList
 			newTodo: '',
 			filter: 'all'
 		}
+		//on souscrit aux évolutions du store
 		this.store.onChange((store) => {
 			this.setState({ todos: store.todos })
 		})
-		this.destroyTodo = this.store.removeTodo.bind(this.store)
+		//lorqu'une méthode du store est appelé, le store est updaté mais pas le component
+		//c'est pourquoi on utilise store.onChange et store.inform()
+		this.destroyTodo = this.store.removeTodo.bind(this.store) 
 		this.toggleTodo = this.store.toggleTodo.bind(this.store)
 		this.clearCompleted = this.store.clearCompleted.bind(this.store)
 		this.updateTitle = this.store.updateTitle.bind(this.store)

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {MouseEvent,FormEvent,KeyboardEvent} from 'react'
 import {Todo} from './interfaces'
-import * as cx from 'classnames'
+import  cx from 'classnames'
 
 interface Props {
 	todo: Todo
