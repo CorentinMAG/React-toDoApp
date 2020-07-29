@@ -1,13 +1,16 @@
 import * as React from 'react'
-import {MouseEvent,FormEvent,KeyboardEvent} from 'react'
+import {MouseEvent, FormEvent, KeyboardEvent, ChangeEvent} from 'react'
 import {Todo} from './interfaces'
 import  cx from 'classnames'
+import {remove_todo, toggle_todo, update_title} from './redux/actions_creator/action_creator'
+import {connect} from 'react-redux'
+import {StoreDispatch} from './redux/store/store'
 
 interface Props {
 	todo: Todo
-	onToggle: (todo: Todo) => void
-	onDestroy: (todo: Todo) => void
-	onUpdate: (todo: Todo, title: string) => void
+	onToggle: (e: ChangeEvent<HTMLInputElement>) => void
+	onDestroy: (e:MouseEvent<HTMLElement>) => void
+	onUpdate: (todo:Todo,title:string) => void
 }
 
 interface State {
@@ -15,42 +18,44 @@ interface State {
 	title: string
 }
 
+
+const mapDispatchToProps = (dispatch: StoreDispatch,ownProps:Props) => {
+	return {
+		onDestroy:() => dispatch(remove_todo(ownProps.todo)),
+		onToggle:() => dispatch(toggle_todo(ownProps.todo)),
+		onUpdate:(todo:Todo,title:string) => dispatch(update_title(ownProps.todo,title)),
+	}
+}
+
 //ne fait des render que si des props ou le state est changé
-export default class TodoItem extends React.PureComponent<Props,State> {
+class TodoItem extends React.PureComponent<Props,State> {
 	//la classe completed est activé si this.props.todo.completed = true
 	constructor(props:Props){
 		super(props)
 		this.state = {
 			editing: false,
-			title:''
+			title: ''
 		}
 	}
 	render () {
-		let { editing , title} = this.state
-		return <li data-id='1595950496588' className={cx({completed:this.props.todo.completed,editing})}>
+		let { todo } = this.props
+		let {editing, title } = this.state
+		return <li data-id='1595950496588' className={cx({completed:todo.completed,editing})}>
 					<div className='view'>
-						<input className='toggle' type='checkbox' onChange={this.toggle} checked={this.props.todo.completed}/>
-						<label onDoubleClick={this.startEditing}>{this.props.todo.title}</label>
-						<button className='destroy' onClick={this.destroy}></button>
+						<input className='toggle' type='checkbox' onChange={this.props.onToggle} checked={todo.completed}/>
+						<label onDoubleClick={this.startEditing}>{todo.title}</label>
+						<button className='destroy' onClick={this.props.onDestroy}>&nbsp;</button>
 					</div>
 					<input type='text' 
 						className='edit' 
 						value={title} 
-						onBlur={this.handleSubmit} 
+						onBlur={this.handleSubmit}
 						onKeyDown={this.handleKeyDown}
 						onInput={this.handleInput}/>
 				</li>
 	}
 
-	toggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-		this.props.onToggle(this.props.todo)
-
-	}
-	destroy = (e: MouseEvent<HTMLButtonElement>) => {
-		this.props.onDestroy(this.props.todo)
-
-	}
-	startEditing = (e: MouseEvent<HTMLLabelElement>) => {
+	startEditing = () => {
 		this.setState({editing:true,title:this.props.todo.title})
 	}
 	handleInput = (e:FormEvent<HTMLInputElement>) => {
@@ -72,3 +77,6 @@ export default class TodoItem extends React.PureComponent<Props,State> {
 
 	}
 }
+
+const item = connect(null,mapDispatchToProps)(TodoItem)
+export default item
