@@ -87,6 +87,7 @@ export default class TodoList extends React.PureComponent<TodoListProps,TodoList
 
 	}
 	render () {
+		console.log('render')
 		let remainingCount = this.remainingCount
 		let completedCount = this.completedCount
 		let todosFiltered = this.state.todos.filter(FILTERS[this.state.filter])
